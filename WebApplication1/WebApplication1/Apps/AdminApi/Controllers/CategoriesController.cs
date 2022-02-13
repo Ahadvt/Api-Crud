@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +21,13 @@ namespace WebApplication1.Apps.AdminApi.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IMapper _mapper;
 
-        public CategoriesController(AppDbContext context, IWebHostEnvironment env)
+        public CategoriesController(AppDbContext context, IWebHostEnvironment env,IMapper mapper)
         {
             _context = context;
             _env = env;
+            _mapper = mapper;
         }
 
         [HttpPost("")]
@@ -63,16 +66,10 @@ namespace WebApplication1.Apps.AdminApi.Controllers
 
         public IActionResult Get(int id )
         {
-            Category category = _context.Categories.Where(c=>!c.IsDeleted).FirstOrDefault(c => c.Id == id);
+            Category category = _context.Categories.Include(c=>c.Products).Where(c=>!c.IsDeleted).FirstOrDefault(c => c.Id == id);
             if (category == null) return NotFound();
 
-            CategoryGetDto categoryGet = new CategoryGetDto
-            {
-                Id=category.Id,
-                Name=category.Name,
-                CreateDate=category.CreateDate,
-                UpdateDate=category.UpdateDate
-            };
+            CategoryGetDto categoryGet = _mapper.Map<CategoryGetDto>(category);
             return StatusCode(200, categoryGet);
         }
 

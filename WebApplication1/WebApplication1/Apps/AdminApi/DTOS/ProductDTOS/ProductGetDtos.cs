@@ -15,6 +15,15 @@ namespace WebApplication1.Apps.DTOS.ProductDTOS
         public decimal SalePrice { get; set; }
         public decimal CostPrice { get; set; }
         public bool IsDeleted { get; set; }
+        public CategoryInProductGetDtos Category { get; set; }
 
+    }
+
+
+    public class CategoryInProductGetDtos
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int ProductsCount { get; set; }
     }
 }
